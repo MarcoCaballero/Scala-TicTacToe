@@ -1,5 +1,9 @@
 package models
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+
 class Board(rows: List[List[Int]] = List(
   List(-1, -1, -1),
   List(-1, -1, -1),
@@ -102,7 +106,10 @@ class Board(rows: List[List[Int]] = List(
       coordinates.length == 3 && equals(getDirections(coordinates))
     }
 
-    isTicTacToe(0) || isTicTacToe(1) // Futures.
+    val firstTicTacToe = Future(isTicTacToe(0))
+    val secondTicTacToe = Future(isTicTacToe(1))
+
+    Await.result(firstTicTacToe, 1 seconds) || Await.result(secondTicTacToe, 1 seconds)
   }
 
   override def equals(that: Any): Boolean =
